@@ -1,0 +1,363 @@
+<?php
+
+function caee_resource_form_field_meta() {
+  module_load_include('inc', 'caee_resource_form', 'includes/ceen_field_options');
+  return array(
+    caee_resource_form_step_1(),
+    caee_resource_form_step_2(),
+    caee_resource_form_step_3(),
+    caee_resource_form_step_4(),
+    caee_resource_form_step_5(),
+    caee_resource_form_step_6(),
+  );
+}
+
+function caee_resource_form_step_1() {
+  return array(
+    'title' => 'Description',
+    'fields' => array(
+      'title' => array(
+        'type' => 'textfield',
+        'title' => 'Title',
+        'description' => 'The name of your resource, location or event',
+        'theme_wrappers' => array('omf_form_element'),
+        'required' => true,
+        'weight' => 0,
+        'node_field' => 'title',
+      ),
+      'description' => array(
+        'type' => 'text_format',
+        'title' => 'Describe your resource:',
+        'description' => 'What should educators know about your resource?',
+        'theme_wrappers' => array('omf_form_element'),
+        'required' => false,
+        'weight' => 1, 
+        'node_field' => 'body',
+      ),
+      'resource_type' => array(
+        'type' => 'select',
+        'title' => 'Resource type:',
+        'theme_wrappers' => array('omf_form_element'),
+        'required' => true,
+        'weight' => 3,
+        'options' => array('Event/Experience', 'Learning Materials'),
+        'node_field' => 'field_resource_cat',
+        'description' => '<strong>Event/Experience</strong> has a time and/or location. These types of resources can be events, workshops, service projects, field trips, nature centers or other types of activities.<br /><strong>Learning Materials</strong> include lesson plans, worksheets, online games, programs, presenters, etc. - any education resource that is not specific to a location or date.',
+      ),
+      'resource_rights' => array(
+        'type' => 'checkbox',
+        'title' => 'Usage Rights:',
+        'theme_wrappers' => array('omf_form_element'),
+        'description' => "I acknowledge that the information, images and any other content that I am adding to Resource Commons is being done legally according to this site's Fair Use and Copyright Declaration",
+        'weight' => 4,
+        'node_field' => 'field_fair_usage',
+      ),
+      /**
+      'resource_sharing' => array(
+        'type' => 'checkbox',
+        'title' => 'Share My Resource',
+        'theme_wrappers' => array('omf_form_element'),
+        'description' => "Please share my resource with the rest of the Conservation & Environmental Education Resource Network.",
+        'weight' => 5,
+      ),**/
+    ),
+  );
+}
+
+function caee_resource_form_step_2() {
+  return array(
+    'title' => 'Details',
+    'js' => array(
+      drupal_get_path('module', 'caee_resource_form') . '/js/checkbox_parent_class.js',
+    ),
+    'event' => array(
+      'title' => 'Details',
+      'js' => drupal_get_path('module', 'caee_resource_form') . '/js/grade-slider.js',
+      'fields' => array(
+        'resource_types' => array(
+          'type' => 'checkboxes',
+          'theme' => 'bootstrap_checkboxes',
+          'theme_wrappers' => array('omf_form_element'),
+          'pre_render' => array('omf_pre_render_conditional_form_element'),
+          'title' => 'Resource Types:',
+          'options' => caee_resource_form_experiences(),
+          'weight' => 1,
+          'node_field' => 'field_resource_type',
+        ),
+        'resource_date_label' => array(
+          'weight' => 1.5,
+          'markup' => '<div class="field-date-popup-label"><label>'. t('Date/Time:') .'</label></div>', 
+        ),
+        'resource_date_start' => array(
+          'type' => 'date_popup',
+          'title' => t('Start:'),
+          //'date_format' => 'Y-m-d H:i',
+          'date_label_position' => 'within',
+          'date_increment' => 15,
+          'weight' => 2,
+          'node_field' => 'field_time',
+        ),
+        'resource_date_end' => array(
+          'type' => 'date_popup',
+          'title' => t('End:'),
+          //'date_format' => 'Y-m-d H:i',
+          'date_label_position' => 'within',
+          'date_increment' => 15,
+          'weight' => 2.5,
+          'node_field' => 'field_time',
+        ),
+        'resource_subjects' => array(
+          'type' => 'checkboxes',
+          'theme' => 'bootstrap_checkboxes',
+          'theme_wrappers' => array('omf_form_element'),
+          'pre_render' => array('omf_pre_render_conditional_form_element'),
+          'title' => 'Subjects:',
+          'options' => caee_resource_form_subjects(),
+          'weight' => 2.8,
+          'node_field' => 'field_subject_matter',
+        ),
+        'resource_audience' => array(
+          'type' => 'select',
+          'title' => 'Audience:',
+          'theme_wrappers' => array('omf_form_element'),
+          'options' => caee_resource_form_audiences(),
+          'multiple' => true,
+          'weight' => 3,
+          'node_field' => 'field_audience',
+        ),
+        'resource_grade_slider' => array(
+          'prefix' => '<div class="form-group form-type-slider form-item-resource-grade-slider"><label>' . t('Target grade/age:') . '</label><div class="description slider-value"></div>',
+          'markup' => '<div class="grade-slider"></div>',
+          'suffix' => '<div class="description help-block">' . t('Select the grade/age span that your resource targets') . '</div></div>',
+          'weight' => 3.1,
+        ),
+        'resource_grade_min' => array(
+          'type' => 'select',
+          'title' => 'Minimum grade:',
+          'theme_wrappers' => array('omf_form_element'),
+          'options' => caee_resources_grades(),
+          'weight' => 3.2,
+          'description' => t('Choose the minimum grade that your resource targets/grade/age span that your resource targets'),
+          'node_field' => 'field_grade_min',
+        ),
+        'resource_grade_max' => array(
+          'type' => 'select',
+          'title' => 'Maximum grade:',
+          'theme_wrappers' => array('omf_form_element'),
+          'options' => caee_resources_grades(),
+          'weight' => 3.3,
+          'description' => t('Choose the maximum grade that your resource targets/grade/age span that your resource targets'),
+          'node_field' => 'field_grade_max',
+        ),
+        'resource_topic' => array(
+          'type' => 'select',
+          'title' => 'Resource Topic:',
+          'theme_wrappers' => array('omf_form_element'),
+          'options' => caee_resource_form_resource_topics(), 
+          'multiple' => true,
+          'weight' => 4,
+          'node_field' => 'field_resource_topic',
+        ),
+      ),
+    ),
+    'material' => array(
+      'title' => 'Details',
+      'js' => drupal_get_path('module', 'caee_resource_form') . '/js/grade-slider.js',
+      'fields' => array(
+        'resource_types' => array(
+          'type' => 'checkboxes',
+          'theme' => 'bootstrap_checkboxes',
+          'theme_wrappers' => array('omf_form_element'),
+          'pre_render' => array('omf_pre_render_conditional_form_element'),
+          'title' => 'Resource Types:',
+          'options' => caee_resource_form_learning_resources(),
+          'weight' => 1,
+          'node_field' => 'field_resource_type',
+        ),
+        'resource_subjects' => array(
+          'type' => 'checkboxes',
+          'theme' => 'bootstrap_checkboxes',
+          'theme_wrappers' => array('omf_form_element'),
+          'pre_render' => array('omf_pre_render_conditional_form_element'),
+          'title' => 'Subjects:',
+          'options' => caee_resource_form_subjects(),
+          'weight' => 2,
+          'node_field' => 'field_subject_matter',
+        ),
+        'resource_audience' => array(
+          'type' => 'select',
+          'title' => 'Audience:',
+          'theme_wrappers' => array('omf_form_element'),
+          'options' => caee_resource_form_audiences(),
+          'multiple' => true,
+          'weight' => 3,
+          'node_field' => 'field_audience',
+        ),
+        'resource_grade_slider' => array(
+          'prefix' => '<div class="form-group form-type-slider form-item-resource-grade-slider"><label>' . t('Target grade/age:') . '</label><div class="description slider-value"></div>',
+          'markup' => '<div class="grade-slider"></div>',
+          'suffix' => '<div class="description help-block">' . t('Select the grade/age span that your resource targets') . '</div></div>',
+          'weight' => 3.1,
+        ),
+        'resource_grade_min' => array(
+          'type' => 'select',
+          'title' => 'Minimum grade:',
+          'theme_wrappers' => array('omf_form_element'),
+          'options' => caee_resources_grades(),
+          'weight' => 3.2,
+          'description' => t('Choose the minimum grade that your resource targets/grade/age span that your resource targets'),
+          'node_field' => 'field_grade_min',
+        ),
+        'resource_grade_max' => array(
+          'type' => 'select',
+          'title' => 'Maximum grade:',
+          'theme_wrappers' => array('omf_form_element'),
+          'options' => caee_resources_grades(),
+          'weight' => 3.3,
+          'description' => t('Choose the maximum grade that your resource targets/grade/age span that your resource targets'),
+          'node_field' => 'field_grade_max',
+        ),
+        'resource_topic' => array(
+          'type' => 'select',
+          'title' => 'Resource Topic:',
+          'theme_wrappers' => array('omf_form_element'),
+          'options' => caee_resource_form_resource_topics(), 
+          'multiple' => true,
+          'weight' => 4,
+          'node_field' => 'field_resource_topic',
+        ),
+      ), 
+    ),
+  );
+}
+
+function caee_resource_form_step_3() {
+  return array(
+    'title' => t('Link & Upload'),
+    'fields' => array(
+      'resource_link' => array(
+        'type' => 'textfield',
+        'title' => 'Link:',
+        'theme_wrappers' => array('omf_form_element'),
+        'weight' => 1,
+        'node_field' => 'field_links',
+      ),
+      'resource_file' => array(
+        'type' => 'managed_file',
+        'title' => 'Document Upload',
+        'description' => 'Only files with the following extensions are allowed: GIF, PNG, JPG, JPEG, DOC, PDF.',
+        'upload_location' => 'public://resource_files/',
+        'upload_validators' => array(
+          'file_validate_extensions' => array('gif png jpg jpeg doc pdf'),
+        ),
+        'weight' => 2,
+        'add_another' => true,
+        'node_field' => 'field_document',
+      ),
+    ),
+  );
+}
+
+function caee_resource_form_step_4() {
+  return array(
+    'title' => t('Target'),
+    'js' => array(
+      drupal_get_path('module', 'caee_resource_form') . '/js/grade-slider.js',
+      drupal_get_path('module', 'caee_resource_form') . '/js/continuum-slider.js',
+    ),
+    'fields' => array(
+      'resource_grade_slider' => array(
+        'prefix' => '<div class="form-group form-type-slider form-item-resource-grade-slider"><label>' . t('Target grade/age:') . '</label><div class="description slider-value"></div>',
+        'markup' => '<div class="grade-slider"></div>',
+        'suffix' => '<div class="description help-block">' . t('Select the grade/age span that your resource targets') . '</div></div>',
+        'weight' => 0,
+      ),
+      'resource_grade_min' => array(
+        'type' => 'select',
+        'title' => 'Minimum grade:',
+        'theme_wrappers' => array('omf_form_element'),
+        'options' => caee_resources_grades(),
+        'weight' => 1,
+        'description' => t('Choose the minimum grade that your resource targets/grade/age span that your resource targets'),
+        'node_field' => 'field_grade_min',
+      ),
+      'resource_grade_max' => array(
+        'type' => 'select',
+        'title' => 'Maximum grade:',
+        'theme_wrappers' => array('omf_form_element'),
+        'options' => caee_resources_grades(),
+        'weight' => 2,
+        'description' => t('Choose the maximum grade that your resource targets/grade/age span that your resource targets'),
+        'node_field' => 'field_grade_max',
+      ),
+      'resource_continuum' => array(
+        'type' => 'select',
+        'title' => 'Education Continuum:',
+        'theme_wrappers' => array('omf_form_element'),
+        'options' => caee_resources_continuum(),
+        'weight' => 4,
+        'description' => t('Conservation and environmental education resources can create awareness, provide information, enhance knowledge, teach skills, and encourage action. Indicate the most applicable point on the continuum for this resource.'),
+        'node_field' => 'field_edu_continuum',
+      ),
+    ),
+  );
+}
+
+function caee_resource_form_step_5() {
+  return array(
+    'title' => t('Standards'),
+    'js' => array(
+      drupal_get_path('module', 'caee_resource_form') . '/js/edu_select.js',
+      drupal_get_path('module', 'caee_resource_form') . '/js/edu_apply.js',
+    ),
+    'css' => array(
+      drupal_get_path('module', 'caee_resource_form') . '/css/edu_select.css',
+    ),
+    'fields' => array(
+      'resource_edu_standard' => array(
+        'type' => 'textfield',
+        'title' => t('Formal Education Standard'),
+        'theme_wrappers' => array('omf_form_element'),
+        'options' => caee_resources_standards_options(), 
+        'weight' => 1,
+        'node_field' => 'field_edu_standards',
+      ),
+    ),
+  );
+}
+
+function caee_resource_form_step_6() {
+  return array(
+    'title' => t('Connect'),
+    'fields' => array(
+      'resource_connect_name' => array(
+        'type' => 'textfield',
+        'title' => t('Name'),
+        'theme_wrappers' => array('omf_form_element'),
+        'weight' => 1,
+        'node_field' => 'field_resource_contact_name',
+      ),
+      'resource_connect_org' => array(
+        'type' => 'textfield',
+        'title' => t('Organization'),
+        'theme_wrappers' => array('omf_form_element'),
+        'weight' => 2,
+        'field_contact_organization',
+      ),
+      'resource_connect_phone' => array(
+        'type' => 'textfield',
+        'title' => t('Phone'),
+        'theme_wrappers' => array('omf_form_element'),
+        'weight' => 3,
+        'node_field' => 'field_contact_phone',
+      ),
+      'resource_connect_email' => array(
+        'type' => 'textfield',
+        'title' => t('Email'),
+        'theme_wrappers' => array('omf_form_element'),
+        'weight' => 4,
+        'node_field' => 'field_resource_contact_email',
+      ),
+    ),
+  );
+}

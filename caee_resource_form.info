@@ -1,0 +1,4 @@
+name = CAEE Resource Form
+description = CAEE Resource Form
+core = 7.x
+dependencies[] = omf_multistep

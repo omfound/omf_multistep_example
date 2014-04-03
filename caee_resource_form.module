@@ -1,0 +1,250 @@
+<?php
+/**
+ * CAEE Resource Form Module
+ * Uses OMF Multistep
+ */
+
+//Add classes to elements by using preprocess functions in preprocess_fields.inc
+module_load_include('inc', 'caee_resource_form', 'includes/preprocess_fields');
+
+//Add fields and steps to form using field_array.inc
+module_load_include('inc', 'caee_resource_form', 'includes/field_array');
+
+/**
+ * Implementation of hook_menu()
+ * Same method as you would use to declare menu for any form
+ */
+function caee_resource_form_menu() {
+  $items = array();
+
+  $items['resource/contribute'] = array(
+    'title' => 'Contribute',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('caee_resource_form_resource_form', 2),
+    'access callback' => 'user_access',
+    'access arguments' => array('create resource content'),
+  );
+
+  $items['ajax_callback/education_standards'] = array(
+    'title' => 'Education Standards callback',
+    'page callback' => 'caee_resource_form_edu_callback',
+    'file' => 'includes/edu_callback.inc',
+    'access callback' => TRUE,
+  );
+
+  return $items;
+}
+
+/**
+ * CAEE Resource Form
+ * Fields defined in field_array.inc and assembled by
+ * omf_multistep_build_form adds steps
+ */
+function caee_resource_form_resource_form($form, $form_state, $nid = null) {
+  //form id used in hook_alter to update jquery for select2
+  $form['#omf_id'] = 'caee_resource_form';
+  if ($nid) {
+    $form_state['update_node'] = $nid;
+  }
+  $form['#attached']['library'][] = array('caee_resource_form', 'select2');
+  $form['#attached']['library'][] = array('system', 'ui.slider'); 
+
+  $form['#attached']['library'][] = array('caee_resource_form', 'selectToUISlider'); 
+
+  $form['#attached']['css'] = array(
+    drupal_get_path('module', 'caee_resource_form') . '/css/bootstrap.css',
+    drupal_get_path('module', 'caee_resource_form') . '/css/form.css',
+  );
+
+  $form['#attached']['js'] = array(
+    drupal_get_path('module', 'caee_resource_form') . '/js/apply_select2.js',
+  );
+
+  $field_array = caee_resource_form_field_meta();
+  $form = omf_multistep_build_form($form, $form_state, $field_array, $module_name = 'caee_resource_form', true);
+  drupal_set_title('Add an Education Resource');
+
+  return $form;
+}
+
+/**
+ * Form submission function
+ */
+function caee_resource_form_submit($form, &$form_state) {
+  global $user;
+
+  $node = new stdClass();
+  $node->type = 'resource';
+  if (!empty($form_state['update_node'])) {
+    $old_node = node_load($form_state['update_node']);
+    $node->nid = $old_node->nid;
+    $node->vid = $old_node->vid;
+    $node->uid = $old_node->uid;
+    $node->created = $old_node->created;
+  }
+  else {
+    $node->uid = $user->uid;
+  }
+
+  foreach ($form_state['field_meta']['node_values'] as $field_name => $field_info) {
+    $node->{$field_name} = $field_info;
+  }
+
+  if (!empty($form_state['field_meta'][2]['stored_values']['resource_date_start'])) {
+    $node->field_time[LANGUAGE_NONE][0]['value'] = strtotime($form_state['field_meta'][2]['stored_values']['resource_date_start']);
+    if (!empty($form_state['field_meta'][2]['stored_values']['resource_date_end'])) {
+      $node->field_time[LANGUAGE_NONE][0]['value2'] = strtotime($form_state['field_meta'][2]['stored_values']['resource_date_end']);
+    }
+  }
+
+  node_save($node);
+  drupal_set_message('Resource Updated Successfully', 'status');
+  drupal_goto('node/'.$node->nid);
+}
+
+/**
+ * Implementation of hook_theme()
+ * Add any necessary form element theme overrides here
+ * the core theme functions are overriden by default and can be
+ * modified in theme_overrides.inc
+ */
+function caee_resource_form_theme($existing, $type, $theme, $path) {
+  return array(
+    'omf_form_element' => array(
+      'render element' => 'element',
+      'file' => '/includes/theme_overrides.inc',
+    ),
+    'omf_form_element_label' => array(
+      'render element' => 'element',
+      'file' => '/includes/theme_overrides.inc',
+    ),
+    'omf_form_required_marker' => array(
+      'render element' => 'element',
+      'file' => '/includes/theme_overrides.inc',
+    ),
+    'bootstrap_checkboxes' => array(
+      'render element' => 'element',
+      'file' => '/includes/bootstrap_checkboxes.inc',
+    ),
+    'bootstrap_checkbox' => array(
+      'render element' => 'element',
+      'file' => '/includes/bootstrap_checkboxes.inc',
+    ),
+    'bootstrap_checkbox_element' => array(
+      'render element' => 'element',
+      'file' => '/includes/bootstrap_checkboxes.inc',
+    ), 
+  );
+}
+
+/**
+ * Implementation of hook_library()
+ */
+function caee_resource_form_library() {
+  $libraries['select2'] = array(
+    'title' => 'Select2',
+    'website' => 'http://ivaynberg.github.io/select2/',
+    'version' => '3.4.3',
+    'js' => array(
+      array(
+        'type' => 'file',
+        'data' => drupal_get_path('module', 'caee_resource_form').'/libraries/select2/select2.js',
+        'group' => JS_LIBRARY,
+        'preprocess' => FALSE
+      ),
+    ),
+    'css' => array(
+      array(
+        'type' => 'file',
+        'data' => drupal_get_path('module', 'caee_resource_form').'/libraries/select2/select2.css'
+      ),
+    ),
+  );
+
+  $libraries['selectToUISlider'] = array(
+    'title' => 'SelectToUISlider',
+    'website' => 'http://www.filamentgroup.com/lab/update_jquery_ui_slider_from_a_select_element_now_with_aria_support/',
+    'version' => '2.0',
+    'js' => array(
+      array(
+        'type' => 'file', 
+        'data' => drupal_get_path('module', 'caee_resource_form').'/libraries/selectToUISlider/js/selectToUISlider.jQuery.js',
+        'group' => JS_LIBRARY,
+        'preprocess' => FALSE
+      ),
+    ),
+    'css' => array(
+      array(
+        'type' => 'file',
+        'data' => drupal_get_path('module', 'caee_resource_form').'/libraries/selectToUISlider/css/ui.slider.extras.css',
+      ),
+    ),
+  );
+
+  return $libraries;
+}
+
+function caee_resource_form_library_alter(&$javascript, $module) {
+  if ($module === 'system') {
+    $menu_info = menu_get_item(request_path());
+    if (!empty($menu_info) && $menu_info['path'] == 'resource/contribute') {
+      $min = '.min';
+      $cdn = 'google';
+      $version = '1.7';
+      $path = drupal_get_path('module', 'jquery_update');
+      jquery_update_jquery_replace($javascript, $cdn, $path, $min, $version);
+      jquery_update_jqueryui_replace($javascript, $cdn, $path, $min);
+    }
+  }
+}
+
+
+function caee_resource_form_determine_step_keys($form, &$form_state, $module_name) {
+  if ($form_state['step'] == 2) {
+    switch ($form_state['field_meta'][1]['stored_values']['resource_type']) {
+      case 0:
+        $subkey = 'event';
+        break;
+      case 1:
+        $subkey = 'material';  
+        break;
+    }
+
+    $keys = array(
+      'key' => 2,
+      'subkey' => $subkey, 
+    );
+
+    return $keys; 
+  }
+  
+  $keys = array(
+    'key' => $form_state['step'],
+  );
+
+  return $keys;
+}
+
+function caee_resource_form_default_values($form, &$form_state, $module_name) {
+  //no good date support yet in multistep
+  //so grab date values from node and put in default values array here
+  if (!empty($form_state['update_node'])) {
+    $current_node = node_load($form_state['update_node']);
+    if (!empty($current_node->field_time[LANGUAGE_NONE][0]['value'])) {
+      $form_state['field_meta'][2]['stored_values']['resource_date_start'] = date('Y-m-d H:i:s', $current_node->field_time[LANGUAGE_NONE][0]['value']);
+      if (!empty($current_node->field_time[LANGUAGE_NONE][0]['value2'])) {
+        $form_state['field_meta'][2]['stored_values']['resource_date_end'] = date('Y-m-d H:i:s', $current_node->field_time[LANGUAGE_NONE][0]['value2']);
+      }
+    }
+  }
+}
+
+function caee_resource_form_menu_local_tasks_alter(&$data, $router_item, $root_path) {
+  if ($router_item['page_arguments'][0]->type == 'resource') {
+    foreach ($data['tabs'][0]['output'] as $key => $info) {
+      if ($info['#link']['path'] == 'node/%/edit') {
+        $data['tabs'][0]['output'][$key]['#link']['href'] = 'resource/contribute/' . $router_item['page_arguments'][0]->nid;
+      }
+    }
+  }
+}

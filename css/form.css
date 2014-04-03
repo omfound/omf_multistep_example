@@ -1,0 +1,137 @@
+.container-inline-date {
+  float: left;
+  width: 245px;
+  clear: none;
+}
+.field-date-popup-label {
+  clear: left;
+}
+.form-item-resource-subjects {
+  clear: left;
+}
+
+.form-type-date-popup .form-item {
+  padding-right: 5px;
+}
+
+fieldset#edit-description-format {
+  display: none;
+}
+
+#caee-resource-form-resource-form .form-item-description-value label {
+  display: none;
+}
+
+.form-item-resource-continuum .ui-slider-label {
+  font-size: .8em;
+}
+.form-item-resource-continuum .description {
+  clear: left;
+  margin-top: 30px;
+}
+
+.ui-widget-content {
+  border: 1px solid #cccccc;
+  left: 8px;
+  margin-right: 10px;
+}
+
+.add-field {
+  margin-bottom: 20px;
+  margin-right: 10px;
+}
+
+#submit-bar {
+  clear: left;
+}
+
+#caee-resource-form-resource-form fieldset {
+  margin: 1em 0 0 0;
+  padding: 10px 10px 0 0;
+}
+
+legend {
+  margin-bottom: 0;
+  font-size: 1em;
+}
+#caee-resource-form-resource-form .form-type-managed-file label {
+  display: none;
+}
+.form-type-managed-file .description {
+  clear: left;
+}
+.form-managed-file input.form-file {
+  float: left;
+  width: 300px;
+}
+.form-managed-file input.form-submit {
+  float: right;
+  width: 100px;
+}
+
+.btn {
+  margin-right: 10px;
+}
+
+#caee-resource-form-resource-form .form-select, 
+#caee-resource-form-resource-form .form-text,
+#caee-resource-form-resource-form .form-textarea {
+  width: 100%;
+}
+
+#caee-resource-form-resource-form .form-checkboxes,
+#caee-resource-form-resource-form .form-radios {
+  margin: 0;
+}
+
+.grippie {
+  display: none;
+}
+
+.form-type-checkbox input {
+  margin-top: -4px;
+}
+
+.description,
+.form-item .description {
+  font-size: 1em;
+}
+
+.form-type-checkbox .description {
+  color: #000;
+}
+
+
+/** Colored Checkbox Grids **/
+label.radio-inline,
+label.checkbox-inline {
+  display: inline-block;
+}
+
+.checkbox-grid input {
+  display: none;
+}
+.checkbox-grid label {
+  display: block;
+  border: 1px solid #a9c38b;
+  padding: 6px;
+}
+.checkbox-grid label.checked {
+  background-color: #a9c38b;
+}
+.checkbox-grid label:hover {
+  background-color: #8b4618;
+  border-color: #8b4618;
+  color: #fff;
+}
+/** End Colored Checkbox Grids **/
+
+/** Progress Box **/
+#block-omf-multistep-form-steps a {
+  display: block;
+  padding: 5px;
+}
+#block-omf-multistep-form-steps .progress-current a {
+  background-color: #c9e5ae;
+}
+/** End Progress Box **/

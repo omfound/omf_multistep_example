@@ -1,0 +1,139 @@
+.eduselect_widget {
+  margin: 1em 0;
+}
+
+.eduselect_widget li {
+  color: #111;
+}
+
+.eduselect_widget .tabs ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-right: 1px solid #CCC;
+  width: 135px;
+  float: left;
+}
+
+.eduselect_widget .tabs li {
+  margin-bottom: 0.5em;
+}
+
+.eduselect_widget .tabs li span {
+  border-bottom-left-radius: 3px;
+  border-top-left-radius: 3px;
+  -webkit-border-bottom-left-radius: 3px;
+  -webkit-border-top-left-radius: 3px;
+  -moz-border-radius-bottomleft: 3px;
+  -moz-border-radius-topleft: 3px;
+  border: 1px solid #C9E5AE;
+  border-right: none; 
+  display: block;
+  padding: 5px 20px 5px 10px;
+  text-align: right;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.eduselect_widget .tabs li span.active {
+  color: #3A4F25;
+  background: #C9E5AE;
+}
+
+.eduselect_widget .tabs li span:hover {
+  color: #FFF;
+  background: #FF9900;
+  border-color: #FF9900;
+  cursor: pointer;
+}
+
+.eduselect_widget .container {
+  float: left;
+  width: 350px;
+  padding: 10px;
+}
+
+.eduselect_widget .container h3 {
+  margin-top: 0;
+}
+
+.eduselect_widget .dropdown ul {
+  margin: 5px 0 1em 5px;
+  padding: 0;
+  border-left: 3px solid #C9E5AE;
+  list-style: none;
+}
+
+.eduselect_widget .dropdown ul li {
+  cursor: pointer;
+  margin: 0;
+  padding: 5px 10px;
+}
+
+.eduselect_widget .dropdown ul li.selected {
+  background: #C9E5AE;
+}
+
+.eduselect_widget .dropdown ul li .expand {
+  display: none;
+}
+
+.eduselect_widget .dropdown ul li.children .expand {
+  width: 14px;
+  height: 14px;
+  text-indent: -9999px;
+  background: url(../images/arrow_down.gif) no-repeat;
+  text-decoration: none;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.eduselect_widget .dropdown .add {
+  width: 10px;
+  height: 10px;
+  text-indent: -9999px;
+  background: url(../images/add.png) no-repeat;
+  text-decoration: none;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.eduselect_widget .active {
+  cursor: pointer;
+}
+
+.eduselect_widget .dropdown a.expand {
+}
+
+.eduselect_widget .bucket {
+  clear: both;
+}
+
+.eduselect_widget .selected_item {
+  border: 1px solid #C9E5AE;
+  padding: 3px;
+  margin: 0 0.25em 0 0;
+}
+
+.eduselect_widget .bucket ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.eduselect_widget .bucket li {
+  list-style: none;
+  background: #FFF;
+  border: 1px solid #C9E5AE;
+  display: block;
+  padding: 5px;
+}
+
+.eduselect_widget .bucket a {
+  width: 11px;
+  height: 12px;
+  text-indent: -9999px;
+  background: url(../images/icon_trashcan.gif) no-repeat;
+  text-decoration: none;
+  display: inline-block;
+}
